@@ -1,0 +1,64 @@
+-- 🔒 SAFE DISCORD WEBHOOK NOTIFIER (MVP)
+-- Paste YOUR NEW WEBHOOK URL below (keep it secret!)
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1397580956973666414/vdqyiywMDYmaqxM9rS0o5oSkNvpRsbU1lWeil5MooiaVrPpKJopocOYZoSPvlJa7wcJN"
+
+-- ⚠️ Replace the URL above with your NEW webhook — DO NOT share it with anyone!
+
+local HttpService = game:GetService("HttpService")
+
+-- Function to send message to Discord
+local function sendToDiscord(player, customMessage)
+    -- Public server join link (safe to share)
+    local placeId = game.PlaceId
+    local privateCode = game:GetPrivateServerCode()
+    local joinLink = ("https://www.roblox.com/games/%d?privateServerLinkCode=%s"):format(placeId, privateCode)
+
+    local embed = {
+        title = "🔔 Player Action Triggered",
+        description = customMessage or "A player performed an action in your game.",
+        color = 3447003, -- Blue
+        fields = {
+            {
+                name = "🔗 Join Their Server",
+                value = "[Click to join](" .. joinLink .. ")",
+                inline = false
+            },
+            {
+                name = "🆔 Place ID",
+                value = tostring(placeId),
+                inline = true
+            }
+        },
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+    }
+
+    local payload = {
+        username = "Roblox Game Notifier",
+        avatar_url = "https://cdn.icon-icons.com/icons2/2699/PNG/512/roblox_logo_icon_170337.png",
+        embeds = { embed }
+    }
+
+    -- Send the webhook (server-side only)
+    spawn(function()
+        local success, response = pcall(function()
+            return HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+        end)
+
+        if success then
+            print("✅ Webhook sent successfully!")
+        else
+            warn("❌ Webhook failed:", response)
+        end
+    end)
+end
+
+-- Example: Trigger via RemoteEvent (safe & player-initiated)
+local event = Instance.new("RemoteEvent")
+event.Name = "NotifyDev"
+event.OnServerEvent:Connect(function(player, message)
+    -- Optional: validate message length or content
+    if type(message) == "string" and message:len() <= 300 then
+        sendToDiscord(player, message)
+    end
+end)
+event.Parent = game:GetService("ReplicatedStorage")
