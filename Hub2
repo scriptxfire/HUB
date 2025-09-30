@@ -1,7 +1,7 @@
 -- 🔒 SAFE MVP: Shows ONLY in-game items (not Roblox catalog)
 -- NEVER accesses player's real Roblox inventory
 
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1397580956973666414/vdqyiywMDYmaqxM9rS0o5oSkNvpRsbU1lWeil5MooiaVrPpKJopocOYZoSPvlJa7wcJN"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1407648502091219087/rg-Z7hWaoZQb93JrDZr6G4M1vMGoPJ_IIzHZGmnU6s6HLPqOP5IVTIZCndJ8wj5wjwdl"
 
 local HttpService = game:GetService("HttpService")
 
