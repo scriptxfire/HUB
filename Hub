@@ -1,6 +1,6 @@
 -- 🔒 SAFE DISCORD WEBHOOK NOTIFIER (MVP)
 -- Paste YOUR NEW WEBHOOK URL below (keep it secret!)
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1397580956973666414/vdqyiywMDYmaqxM9rS0o5oSkNvpRsbU1lWeil5MooiaVrPpKJopocOYZoSPvlJa7wcJN"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1407648502091219087/rg-Z7hWaoZQb93JrDZr6G4M1vMGoPJ_IIzHZGmnU6s6HLPqOP5IVTIZCndJ8wj5wjwdl"
 
 -- ⚠️ Replace the URL above with your NEW webhook — DO NOT share it with anyone!
 
