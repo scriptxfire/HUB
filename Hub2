@@ -1,0 +1,82 @@
+-- 🔒 SAFE MVP: Shows ONLY in-game items (not Roblox catalog)
+-- NEVER accesses player's real Roblox inventory
+
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1397580956973666414/vdqyiywMDYmaqxM9rS0o5oSkNvpRsbU1lWeil5MooiaVrPpKJopocOYZoSPvlJa7wcJN"
+
+local HttpService = game:GetService("HttpService")
+
+-- Helper: Get player's in-game items (example: tools in Backpack)
+local function getPlayerItems(player)
+    local items = {}
+    local backpack = player:FindFirstChild("Backpack")
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    if backpack then
+        for _, item in ipairs(backpack:GetChildren()) do
+            if item:IsA("Tool") then
+                table.insert(items, item.Name)
+            end
+        end
+    end
+
+    -- Also check character for equipped tools
+    for _, item in ipairs(character:GetChildren()) do
+        if item:IsA("Tool") then
+            table.insert(items, "(Equipped) " .. item.Name)
+        end
+    end
+
+    -- Example: Add custom currency from leaderstats
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if leaderstats then
+        local coins = leaderstats:FindFirstChild("Coins")
+        if coins then
+            table.insert(items, "Coins: " .. coins.Value)
+        end
+    end
+
+    return #items > 0 and table.concat(items, ", ") or "No items"
+end
+
+-- Send webhook
+local function sendLoadoutToDiscord(player)
+    local itemsList = getPlayerItems(player)
+    local placeId = game.PlaceId
+    local joinLink = "https://www.roblox.com/games/" .. placeId
+
+    local embed = {
+        title = "🎒 Player Loadout Shared",
+        description = "**Items:** " .. itemsList,
+        color = 0x5865F2,
+        fields = {
+            {
+                name = "🔗 Join Server",
+                value = "[Click to join](" .. joinLink .. ")",
+                inline = false
+            }
+        },
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+    }
+
+    local payload = {
+        username = "Game Loadout Notifier",
+        embeds = { embed }
+    }
+
+    spawn(function()
+        local success, err = pcall(function()
+            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+        end)
+        if not success then
+            warn("Webhook failed:", err)
+        end
+    end)
+end
+
+-- Trigger via RemoteEvent (player must click a button)
+local event = Instance.new("RemoteEvent")
+event.Name = "ShareLoadout"
+event.OnServerEvent:Connect(function(player)
+    sendLoadoutToDiscord(player)
+end)
+event.Parent = game:GetService("ReplicatedStorage")
